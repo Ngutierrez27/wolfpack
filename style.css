@@ -1273,8 +1273,8 @@ body {
 .wizard-header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 14px var(--s4) 0;
+  justify-content: space-between;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) var(--s4) 0;
   flex-shrink: 0;
 }
 
@@ -1325,7 +1325,7 @@ body {
 }
 
 .wizard-hero-footer {
-  padding: var(--s5) var(--s5) 48px;
+  padding: var(--s5) var(--s5) calc(48px + env(safe-area-inset-bottom, 0px));
   text-align: center;
   background: linear-gradient(to bottom, transparent, rgba(10,10,10,0.95) 30%);
 }
@@ -1350,6 +1350,23 @@ body {
   transition: color 0.2s;
 }
 .wizard-skip:hover { color: var(--text-secondary); }
+
+.wizard-back {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+.wizard-back:hover { color: var(--text-secondary); }
+.wizard-back.hidden { visibility: hidden; pointer-events: none; }
 
 .wizard-steps {
   flex: 1;
@@ -1406,7 +1423,7 @@ body {
 }
 
 .wizard-step-content {
-  padding: var(--s6) var(--s4) 40px;
+  padding: var(--s6) var(--s4) calc(40px + env(safe-area-inset-bottom, 0px));
   /* push content below the logo watermark */
   padding-top: calc(min(42vw, 190px) + var(--s6));
   display: flex;

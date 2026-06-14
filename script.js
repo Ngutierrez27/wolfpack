@@ -113,6 +113,34 @@ function playCheck() {
   bub.start(t + 0.1); bub.stop(t + 0.3);
 }
 
+// Checkmark — soft satisfying "tick" with a warm harmonic tap
+function playCheckmark() {
+  const ctx = _ctx(), t = ctx.currentTime;
+  const reverb = _getReverb(ctx, 0.6);
+
+  // Primary tap: short mid-tone bell hit
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(900, t);
+  osc.frequency.exponentialRampToValueAtTime(600, t + 0.08);
+  gain.gain.setValueAtTime(0.22, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  osc.connect(gain); gain.connect(reverb); reverb.connect(ctx.destination);
+  osc.start(t); osc.stop(t + 0.2);
+
+  // Subtle harmonic shimmer
+  const osc2 = ctx.createOscillator();
+  const gain2 = ctx.createGain();
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(1800, t);
+  osc2.frequency.exponentialRampToValueAtTime(1200, t + 0.06);
+  gain2.gain.setValueAtTime(0.07, t);
+  gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  osc2.connect(gain2); gain2.connect(reverb); reverb.connect(ctx.destination);
+  osc2.start(t); osc2.stop(t + 0.14);
+}
+
 // Notification ping — two-note descending, macOS-style
 function playAlarm() {
   const ctx = _ctx(), t = ctx.currentTime;
@@ -766,7 +794,7 @@ function loadList(id, items, prefix) {
     cb.addEventListener('change', () => {
       localStorage.setItem(itemId, cb.checked);
       cb.checked ? li.classList.add('completed') : li.classList.remove('completed');
-      if (cb.checked) { playCheck(); spawnParticles(cb); }
+      if (cb.checked) { playCheckmark(); spawnParticles(cb); }
       if (prefix === 'workout') updateWorkoutProgress();
       checkStreakCompletion();
       updatePerformanceScore();
@@ -1018,7 +1046,7 @@ function renderNowBlock() {
       nowCheck.addEventListener('change', function handler() {
         localStorage.setItem(itemKey, nowCheck.checked);
         nowBlock.style.opacity = nowCheck.checked ? '0.45' : '1';
-        if (nowCheck.checked) { playCheck(); spawnParticles(nowCheck); }
+        if (nowCheck.checked) { playCheckmark(); spawnParticles(nowCheck); }
         // Also sync the routineList checkbox if visible
         const twin = document.getElementById(itemKey);
         if (twin) twin.checked = nowCheck.checked;
@@ -1055,7 +1083,7 @@ function renderNowBlock() {
     cb.addEventListener('change', () => {
       localStorage.setItem(itemKey, cb.checked);
       cb.checked ? li.classList.add('completed') : li.classList.remove('completed');
-      if (cb.checked) { playCheck(); spawnParticles(cb); }
+      if (cb.checked) { playCheckmark(); spawnParticles(cb); }
       // Sync routineList twin
       const twin = document.getElementById(itemKey);
       if (twin) twin.checked = cb.checked;
@@ -2028,6 +2056,14 @@ function wizardGoTo(step) {
   currentStep = step;
   const fill = document.getElementById('wizardProgressFill');
   if (fill) fill.style.width = `${(step / (TOTAL_STEPS - 1)) * 100}%`;
+
+  // Show/hide back button — hidden on step 0
+  const backBtn = document.getElementById('wizardBack');
+  if (backBtn) backBtn.classList.toggle('hidden', step === 0);
+
+  // Hide watermark on step 0 (welcome page)
+  const watermark = document.querySelector('.wizard-page-watermark');
+  if (watermark) watermark.style.opacity = step === 0 ? '0' : '1';
 }
 
 function initWizard() {
@@ -2133,6 +2169,11 @@ function initWizard() {
       closeWizard();
     });
   }
+
+  // Back button
+  document.getElementById('wizardBack')?.addEventListener('click', () => {
+    if (currentStep > 0) wizardGoTo(currentStep - 1);
+  });
 
   // Skip
   document.getElementById('wizardSkip')?.addEventListener('click', () => {
