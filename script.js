@@ -473,25 +473,11 @@ function generateSchedule(answers) {
   }
 
   // ── Morning obligations ──────────────────────
-  if (workoutTime === 'early_morning') {
-    if (morning === 'kids' || morning === 'both') {
-      // Kids routine after workout
-      const [kH, kM] = addMins(workoutH, workoutM, 60); // workout ~1hr
-      s(kH, kM, 'Get kids ready');
-      const [dH, dM] = addMins(kH, kM, 30);
-      s(dH, dM, 'Daycare / school drop-off');
-    }
-    if (morning === 'commute') {
-      const [comH, comM] = addMins(wsH, wsM, -45);
-      s(comH, comM, 'Commute to work');
-    }
-  } else {
-    if (morning === 'kids' || morning === 'both') {
-      const [kH, kM] = addMins(wH, wM, 45);
-      s(kH, kM, 'Get kids ready');
-      const [dH, dM] = addMins(kH, kM, 30);
-      s(dH, dM, 'Daycare / school drop-off');
-    }
+  if (morning) {
+    const [oblH, oblM] = addMins(wsH, wsM, -30); // 30 min before work
+    const obTime = document.getElementById('inputMorningTime')?.value || wizardAnswers.morningObligationTime || '07:00';
+    const [otH, otM] = obTime.split(':').map(Number);
+    s(otH, otM, morning);
   }
 
   // ── Workout ──────────────────────────────────
@@ -2064,6 +2050,26 @@ function wizardGoTo(step) {
   // Hide watermark on step 0 (welcome page)
   const watermark = document.querySelector('.wizard-page-watermark');
   if (watermark) watermark.style.opacity = step === 0 ? '0' : '1';
+
+  // Update sticky CTA footer
+  const footer = document.getElementById('wizardBtnFooter');
+  const cta    = document.getElementById('wizardCTA');
+  const CTA_MAP = {
+    0: { label: "Let's Build My Plan", action: 'next', next: 1 },
+    3: { label: 'Continue',            action: 'next', next: 4 },
+    6: { label: 'Next Step',           action: 'next', next: 7 },
+    7: { label: 'Build My Plan →',     action: 'finish'         },
+    9: { label: 'Start Training →',    action: 'done'           },
+  };
+  if (footer && cta) {
+    const cfg = CTA_MAP[step];
+    footer.classList.toggle('hidden', !cfg || step === 8);
+    if (cfg) {
+      cta.textContent   = cfg.label;
+      cta._wAction      = cfg.action;
+      cta._wNext        = cfg.next;
+    }
+  }
 }
 
 function initWizard() {
@@ -2134,41 +2140,28 @@ function initWizard() {
     input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addCustomSupp(input.value); } });
   })();
 
-  // Next buttons
-  document.querySelectorAll('.wizard-next-btn').forEach(btn => {
-    if (btn.id === 'wizardFinishBtn' || btn.id === 'wizardDoneBtn') return;
-    btn.addEventListener('click', () => {
-      const next = parseInt(btn.dataset.next);
-      wizardGoTo(next);
-    });
-  });
-
-  // Finish → generate
-  const finishBtn = document.getElementById('wizardFinishBtn');
-  if (finishBtn) {
-    finishBtn.addEventListener('click', () => {
+  // Sticky CTA button
+  document.getElementById('wizardCTA')?.addEventListener('click', () => {
+    const cta = document.getElementById('wizardCTA');
+    const action = cta._wAction;
+    if (action === 'next') {
+      wizardGoTo(cta._wNext);
+    } else if (action === 'finish') {
       // Gather schedule answers
-      wizardAnswers.wakeTime            = document.getElementById('inputWake')?.value             || '05:00';
-      wizardAnswers.workStart           = document.getElementById('inputWorkStart')?.value        || '08:00';
-      wizardAnswers.workEnd             = document.getElementById('inputWorkEnd')?.value          || '17:00';
-      wizardAnswers.sleepTime           = document.getElementById('inputSleep')?.value            || '22:00';
-      wizardAnswers.morning             = document.getElementById('inputMorning')?.value          || 'none';
-      wizardAnswers.morningObligationTime = document.getElementById('inputMorningTime')?.value    || '07:00';
-      wizardAnswers.workoutTime         = document.getElementById('inputWorkoutTime')?.value      || 'early_morning';
-      wizardAnswers.workoutStartTime    = document.getElementById('inputWorkoutStartTime')?.value || '05:00';
-
-      wizardGoTo(8); // generating
+      wizardAnswers.wakeTime              = document.getElementById('inputWake')?.value             || '05:00';
+      wizardAnswers.workStart             = document.getElementById('inputWorkStart')?.value        || '08:00';
+      wizardAnswers.workEnd               = document.getElementById('inputWorkEnd')?.value          || '17:00';
+      wizardAnswers.sleepTime             = document.getElementById('inputSleep')?.value            || '22:00';
+      wizardAnswers.morning               = document.getElementById('inputMorning')?.value.trim()   || '';
+      wizardAnswers.morningObligationTime = document.getElementById('inputMorningTime')?.value      || '07:00';
+      wizardAnswers.workoutTime           = document.getElementById('inputWorkoutTime')?.value      || 'early_morning';
+      wizardAnswers.workoutStartTime      = document.getElementById('inputWorkoutStartTime')?.value || '05:00';
+      wizardGoTo(8);
       runGenerating();
-    });
-  }
-
-  // Done button
-  const doneBtn = document.getElementById('wizardDoneBtn');
-  if (doneBtn) {
-    doneBtn.addEventListener('click', () => {
+    } else if (action === 'done') {
       closeWizard();
-    });
-  }
+    }
+  });
 
   // Back button
   document.getElementById('wizardBack')?.addEventListener('click', () => {

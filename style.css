@@ -1325,7 +1325,7 @@ body {
 }
 
 .wizard-hero-footer {
-  padding: var(--s5) var(--s5) calc(48px + env(safe-area-inset-bottom, 0px));
+  padding: var(--s5) var(--s5) var(--s5);
   text-align: center;
   background: linear-gradient(to bottom, transparent, rgba(10,10,10,0.95) 30%);
 }
@@ -1350,6 +1350,14 @@ body {
   transition: color 0.2s;
 }
 .wizard-skip:hover { color: var(--text-secondary); }
+
+/* Sticky CTA footer — always above the home indicator */
+.wizard-btn-footer {
+  flex-shrink: 0;
+  padding: var(--s3) var(--s4) calc(var(--s4) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, var(--color-base) 60%, transparent);
+}
+.wizard-btn-footer.hidden { display: none; }
 
 .wizard-back {
   background: none;
@@ -1425,7 +1433,7 @@ body {
 }
 
 .wizard-step-content {
-  padding: var(--s6) var(--s4) calc(40px + env(safe-area-inset-bottom, 0px));
+  padding: var(--s6) var(--s4) var(--s6);
   /* push content below the logo watermark */
   padding-top: calc(min(42vw, 190px) + var(--s6));
   display: flex;

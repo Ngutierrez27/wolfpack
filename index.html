@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=21" />
+  <link rel="stylesheet" href="style.css?v=22" />
 </head>
 <body>
 
@@ -51,7 +51,6 @@
           </div>
           <div class="wizard-hero-footer">
             <p class="wizard-hero-sub">Answer a few questions and we'll build your personalized workout plan and daily schedule — backed by science.</p>
-            <button class="btn-primary wizard-next-btn" data-next="1">Let's Build My Plan</button>
           </div>
         </div>
 
@@ -139,7 +138,6 @@
                 <span class="opt-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="4" r="1.5"/><path d="M10 6v5l-2 4M10 11l2 4M7 9h6"/></svg></span><span class="opt-label">Bodyweight Only</span>
               </button>
             </div>
-            <button class="btn-primary wizard-next-btn" data-next="4" style="margin-top:16px">Continue</button>
           </div>
         </div>
 
@@ -224,12 +222,7 @@
               </div>
               <div class="form-row">
                 <label class="form-label">Morning obligation?</label>
-                <select class="form-select" id="inputMorning">
-                  <option value="none">None</option>
-                  <option value="kids" selected>Kids / Daycare</option>
-                  <option value="commute">Commute</option>
-                  <option value="both">Kids + Commute</option>
-                </select>
+                <input type="text" class="form-time" id="inputMorning" placeholder="e.g. Daycare, Commute..." value="Kids / Daycare" style="text-align:left;padding:0 10px;font-size:13px;" />
               </div>
               <div class="form-row">
                 <label class="form-label">Obligation time</label>
@@ -251,7 +244,6 @@
               </div>
             </div>
 
-            <button class="btn-primary wizard-next-btn" data-next="7" style="margin-top:20px">Next Step</button>
           </div>
         </div>
 
@@ -299,7 +291,6 @@
               <button type="button" class="custom-supp-add" id="customSuppAdd">Add</button>
             </div>
             <div class="custom-supp-tags" id="customSuppTags"></div>
-            <button class="btn-primary wizard-next-btn" id="wizardFinishBtn" style="margin-top:20px">Build My Plan →</button>
           </div>
         </div>
 
@@ -318,12 +309,16 @@
             <h1 class="wizard-title">Your plan<br/>is ready.</h1>
             <p class="wizard-subtitle" id="planSummary">Your personalized workout plan and schedule have been built.</p>
             <div class="plan-preview" id="planPreview"></div>
-            <button class="btn-primary wizard-next-btn" id="wizardDoneBtn" style="margin-top:20px">Start Training →</button>
           </div>
         </div>
 
       </div>
       <!-- /wizard-steps -->
+
+      <!-- Sticky CTA footer — lives outside scroll area, always above home indicator -->
+      <div class="wizard-btn-footer" id="wizardBtnFooter">
+        <button class="btn-primary" id="wizardCTA">Let's Build My Plan</button>
+      </div>
 
     </div>
   </div>
@@ -678,7 +673,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=27"></script>
+  <script src="script.js?v=28"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
