@@ -55,10 +55,34 @@
           </div>
         </div>
 
-        <!-- STEP 1: Goal -->
+        <!-- STEP 1: Profile -->
         <div class="wizard-step" data-step="1">
           <div class="wizard-step-content">
-            <p class="wizard-eyebrow">Step 1 of 7</p>
+            <p class="wizard-eyebrow">Step 1 of 8</p>
+            <h2 class="wizard-title">Let's<br/>personalize<br/>your plan</h2>
+            <p class="wizard-subtitle" style="margin-top:-8px;margin-bottom:24px">Tell us a bit about yourself.</p>
+            <div class="wizard-form">
+              <div class="form-row">
+                <label class="form-label">Your first name</label>
+                <input type="text" class="form-time" id="inputName" placeholder="Enter your name" style="text-align:left;padding:0 12px;font-size:16px;" autocomplete="given-name" />
+              </div>
+              <div class="form-row">
+                <label class="form-label">Daily water goal</label>
+                <select class="form-select" id="inputWaterGlasses">
+                  <option value="6">6 glasses / day</option>
+                  <option value="8" selected>8 glasses / day</option>
+                  <option value="10">10 glasses / day</option>
+                  <option value="12">12 glasses / day</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Goal -->
+        <div class="wizard-step" data-step="2">
+          <div class="wizard-step-content">
+            <p class="wizard-eyebrow">Step 2 of 8</p>
             <h2 class="wizard-title">What's your<br/>primary goal?</h2>
             <div class="wizard-options" id="opts-goal">
               <button class="wizard-option" data-key="goal" data-val="muscle">
@@ -85,10 +109,10 @@
           </div>
         </div>
 
-        <!-- STEP 2: Location -->
-        <div class="wizard-step" data-step="2">
+        <!-- STEP 3: Location -->
+        <div class="wizard-step" data-step="3">
           <div class="wizard-step-content">
-            <p class="wizard-eyebrow">Step 2 of 7</p>
+            <p class="wizard-eyebrow">Step 3 of 8</p>
             <h2 class="wizard-title">Where do<br/>you train?</h2>
             <div class="wizard-options" id="opts-location">
               <button class="wizard-option" data-key="location" data-val="gym">
@@ -110,10 +134,10 @@
           </div>
         </div>
 
-        <!-- STEP 3: Equipment (shown only if home/both) -->
-        <div class="wizard-step" data-step="3">
+        <!-- STEP 4: Equipment (shown only if home/both) -->
+        <div class="wizard-step" data-step="4">
           <div class="wizard-step-content">
-            <p class="wizard-eyebrow">Step 3 of 7</p>
+            <p class="wizard-eyebrow">Step 4 of 8</p>
             <h2 class="wizard-title">What home<br/>equipment do you have?</h2>
             <p class="wizard-subtitle" style="margin-top:-8px;margin-bottom:16px">Select all that apply.</p>
             <div class="wizard-options multi" id="opts-equipment">
@@ -142,10 +166,10 @@
           </div>
         </div>
 
-        <!-- STEP 4: Training days -->
-        <div class="wizard-step" data-step="4">
+        <!-- STEP 5: Training days -->
+        <div class="wizard-step" data-step="5">
           <div class="wizard-step-content">
-            <p class="wizard-eyebrow">Step 4 of 7</p>
+            <p class="wizard-eyebrow">Step 5 of 8</p>
             <h2 class="wizard-title">How many days<br/>per week?</h2>
             <div class="wizard-options days-grid" id="opts-days">
               <button class="wizard-option" data-key="days" data-val="3">
@@ -172,10 +196,10 @@
           </div>
         </div>
 
-        <!-- STEP 5: Experience -->
-        <div class="wizard-step" data-step="5">
+        <!-- STEP 6: Experience -->
+        <div class="wizard-step" data-step="6">
           <div class="wizard-step-content">
-            <p class="wizard-eyebrow">Step 5 of 7</p>
+            <p class="wizard-eyebrow">Step 6 of 8</p>
             <h2 class="wizard-title">Your training<br/>experience?</h2>
             <div class="wizard-options" id="opts-level">
               <button class="wizard-option" data-key="level" data-val="beginner">
@@ -197,10 +221,10 @@
           </div>
         </div>
 
-        <!-- STEP 6: Schedule inputs -->
-        <div class="wizard-step" data-step="6">
+        <!-- STEP 7: Schedule inputs -->
+        <div class="wizard-step" data-step="7">
           <div class="wizard-step-content">
-            <p class="wizard-eyebrow">Step 6 of 7</p>
+            <p class="wizard-eyebrow">Step 7 of 8</p>
             <h2 class="wizard-title">Your daily<br/>schedule</h2>
             <p class="wizard-subtitle" style="margin-top:-8px;margin-bottom:20px">We'll build your optimized routine around your life.</p>
 
@@ -248,10 +272,10 @@
           </div>
         </div>
 
-        <!-- STEP 7: Supplements -->
-        <div class="wizard-step" data-step="7">
+        <!-- STEP 8: Supplements -->
+        <div class="wizard-step" data-step="8">
           <div class="wizard-step-content">
-            <p class="wizard-eyebrow">Step 7 of 7</p>
+            <p class="wizard-eyebrow">Step 8 of 8</p>
             <h2 class="wizard-title">What supplements<br/>do you take?</h2>
             <p class="wizard-subtitle" style="margin-top:-8px;margin-bottom:16px">We'll schedule them at the scientifically optimal times.</p>
             <div class="wizard-options multi supp-grid" id="opts-supplements">
@@ -295,8 +319,8 @@
           </div>
         </div>
 
-        <!-- STEP 8: Generating -->
-        <div class="wizard-step" data-step="8">
+        <!-- STEP 9: Generating -->
+        <div class="wizard-step" data-step="9">
           <div class="wizard-step-content generating">
             <div class="gen-spinner"></div>
             <h2 class="wizard-title" style="margin-top:24px">Building your<br/>plan...</h2>
@@ -304,8 +328,8 @@
           </div>
         </div>
 
-        <!-- STEP 9: Done -->
-        <div class="wizard-step" data-step="9">
+        <!-- STEP 10: Done -->
+        <div class="wizard-step" data-step="10">
           <div class="wizard-step-content">
             <h1 class="wizard-title">Your plan<br/>is ready.</h1>
             <p class="wizard-subtitle" id="planSummary">Your personalized workout plan and schedule have been built.</p>
@@ -674,7 +698,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=28"></script>
+  <script src="script.js?v=29"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));

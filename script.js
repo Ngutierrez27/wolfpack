@@ -193,28 +193,25 @@ function playStreakMilestone() {
 
 // ── Default Fallback Data ──────────────────────
 const DEFAULT_HYDRATION = [
-  "4:30 AM – 12oz (lemon mix)", "5:45 AM – 12oz (post-WO)", "6:30 AM – 12oz (breakfast)",
-  "8:30 AM – 12oz", "10:30 AM – 12oz", "12:30 PM – 12oz (lunch)",
-  "3:30 PM – 12oz (snack)", "5:30 PM – 12oz", "8:30 PM – 12oz"
+  "Morning – First glass of water",
+  "Mid-Morning – Hydrate",
+  "Before Lunch – Water",
+  "Lunchtime – Hydrate",
+  "Afternoon – Water break",
+  "Mid-Afternoon – Hydrate",
+  "Before Dinner – Water",
+  "Evening – Hydrate",
+  "Before Bed – Final glass"
 ];
-const DEFAULT_SCHEDULE = [
-  "4:30 AM – Wake up, lemon + turmeric + salt water, Creatine (7 caps)",
-  "5:00 AM – Strength training (Workout of the Day)", "5:45 AM – Cool down, hydrate",
-  "6:00 AM – Post-workout shake", "6:30 AM – Shower + get son ready", "7:00 AM – Daycare drop-off",
-  "8:00 AM – Breakfast + Supplements", "8:00 AM – Start Work From Home",
-  "10:30 AM – Water + quick stretch", "12:00–1:00 PM – Lunch + 10-min walk",
-  "3:30 PM – Snack", "5:00 PM – Work ends", "5:30 PM – Family Time + Dinner",
-  "8:30 PM – Optional Cardio / Abs / Sauna", "9:00 PM – Herbal Tea",
-  "9:15 PM – Casein Protein", "9:30–10:00 PM – Wind down + prepare for sleep"
-];
+const DEFAULT_SCHEDULE = [];
 const DEFAULT_WORKOUTS = {
-  Sunday:    { title: "Recovery Day", items: [] },
-  Monday:    { title: "Push — Chest, Shoulders, Triceps",  items: ["Bench Press – 4 sets","Shoulder Press – 3 sets","Chest Flys – 3 sets","Tricep Pushdowns – 3 sets","Lateral Raises – 3 sets","Overhead Triceps – 2 sets"] },
-  Tuesday:   { title: "Pull — Back, Biceps",               items: ["Bent-Over Row – 4 sets","Lat Pulldown – 3 sets","Hammer Curls – 3 sets","Face Pulls – 3 sets","Concentration Curls – 2 sets","Punching Bag – 3 rounds"] },
-  Wednesday: { title: "Legs + Core",                       items: ["Squats – 4 sets","Lunges – 3 sets","RDLs – 3 sets","Step-ups – 2 sets","Sit-ups – 3 sets","Plank – 2×45s"] },
-  Thursday:  { title: "Upper Body Circuit",                items: ["Incline DB Press – 10 reps","Pull-ups / Lat Pulldown – 8–10 reps","Shoulder Press – 12 reps","Bent-Over Rows – 10 reps","Push-ups – to failure","Punching Bag – 2 min"] },
-  Friday:    { title: "Glutes, Hamstrings + Core",         items: ["Hip Thrusts – 4 sets","Sumo Deadlifts – 3 sets","Glute Bridges – 2 sets","Hamstring Curls – 3 sets","Weighted Sit-ups – 3 sets"] },
-  Saturday:  { title: "Abs & Cardio",                      items: ["Sit-ups – 3 sets","Ab Roller – 3 sets","Mountain Climbers – 2×1 min","Russian Twists – 2 sets","Punching Bag – 3 rounds"] }
+  Sunday:    { title: "Recovery Day",           items: [] },
+  Monday:    { title: "Monday Workout",         items: [] },
+  Tuesday:   { title: "Tuesday Workout",        items: [] },
+  Wednesday: { title: "Wednesday Workout",      items: [] },
+  Thursday:  { title: "Thursday Workout",       items: [] },
+  Friday:    { title: "Friday Workout",         items: [] },
+  Saturday:  { title: "Saturday Workout",       items: [] }
 };
 const DEFAULT_QUOTES = [
   "Suffer now and live the rest of your life as a champion.",
@@ -868,7 +865,7 @@ function calculatePerformanceScore() {
     return Math.round([...cbs].filter(cb => cb.checked).length / cbs.length * 100);
   };
   const workoutPct   = calcPct('#workoutList input[type="checkbox"]');
-  const hydrationPct = Math.round((getHydrationCount() / 9) * 100);
+  const hydrationPct = Math.round((getHydrationCount() / getHydrationDropsGoal()) * 100);
   const todoCbs      = document.querySelectorAll('#todoList input[type="checkbox"]');
   const hasTodos     = todoCbs.length > 0;
   const todoPct      = hasTodos ? Math.round([...todoCbs].filter(cb => cb.checked).length / todoCbs.length * 100) : 0;
@@ -899,7 +896,7 @@ function updatePerformanceScore() {
   }
 
   // Chips
-  const hydOz = Math.round((getHydrationCount() / 9) * getHydrationGoal());
+  const hydOz = Math.round((getHydrationCount() / getHydrationDropsGoal()) * getHydrationGoal());
   const woChip  = document.getElementById('scoreWorkoutChip');
   const hydChip = document.getElementById('scoreHydroChip');
   const taskChip = document.getElementById('scoreTaskChip');
@@ -919,7 +916,7 @@ function updatePerformanceScore() {
 function renderGreetingHeader() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  const name = localStorage.getItem('user_name') || 'Noel';
+  const name = localStorage.getItem('user_name') || 'Champion';
   const initial = name.charAt(0).toUpperCase();
 
   const timeEl = document.getElementById('greetingTime');
@@ -1084,13 +1081,16 @@ function renderNowBlock() {
 }
 
 // ── Hydration Oz Tracker ───────────────────────
+function getHydrationDropsGoal() {
+  return parseInt(localStorage.getItem('hydration_drops_goal') || '8');
+}
+
 function getHydrationGoal() {
-  const sex = localStorage.getItem('hydration_sex') || 'male';
-  return sex === 'female' ? 91 : 125;
+  return getHydrationDropsGoal() * 12;
 }
 
 function getHydrationOzPerDrop() {
-  return Math.round(getHydrationGoal() / 9);
+  return Math.round(getHydrationGoal() / getHydrationDropsGoal());
 }
 
 function getHydrationCount() {
@@ -1105,7 +1105,7 @@ function getHydrationCount() {
 }
 
 function saveHydrationCount(n) {
-  localStorage.setItem('hydration_count', String(Math.max(0, Math.min(9, n))));
+  localStorage.setItem('hydration_count', String(Math.max(0, Math.min(getHydrationDropsGoal(), n))));
   localStorage.setItem('hydration_count_date', new Date().toLocaleDateString());
 }
 
@@ -1117,7 +1117,8 @@ function loadHydrationDrops() {
   const count     = getHydrationCount();
   grid.innerHTML  = '';
 
-  for (let i = 0; i < 9; i++) {
+  const dropsGoal = getHydrationDropsGoal();
+  for (let i = 0; i < dropsGoal; i++) {
     const filled = i < count;
     const drop = document.createElement('div');
     drop.className = 'h-drop' + (filled ? ' filled' : '');
@@ -1135,7 +1136,7 @@ function loadHydrationDrops() {
       const newCount = (i < count) ? i : i + 1;
       saveHydrationCount(newCount);
       if (i >= count) { playCheck(); spawnParticles(drop); }
-      if (newCount >= 9) localStorage.setItem('hydration_ever_full', '1');
+      if (newCount >= getHydrationDropsGoal()) localStorage.setItem('hydration_ever_full', '1');
       loadHydrationDrops();
       updatePerformanceScore();
       checkStreakCompletion();
@@ -1152,7 +1153,7 @@ function updateHydrationOzDisplay() {
   const count     = getHydrationCount();
   const goal      = getHydrationGoal();
   const ozPerDrop = getHydrationOzPerDrop();
-  const oz        = Math.round((count / 9) * goal);
+  const oz        = Math.round((count / getHydrationDropsGoal()) * goal);
 
   const chip = document.getElementById('hydrationOzDisplay');
   if (chip) chip.textContent = `${oz} / ${goal} oz`;
@@ -1317,7 +1318,7 @@ function saveDailyScore() {
     todoPct,
     tier: tier ? tier[1] : 'Getting Started',
     workoutTitle: workouts[day]?.title || '—',
-    hydrationOz: Math.round((getHydrationCount() / 9) * getHydrationGoal()),
+    hydrationOz: Math.round((getHydrationCount() / getHydrationDropsGoal()) * getHydrationGoal()),
     hydrationGoal: getHydrationGoal(),
     streak: parseInt(localStorage.getItem('streak') || '0')
   };
@@ -1621,7 +1622,7 @@ const ACHIEVEMENTS = [
     if (Object.values(saved).some(v => (typeof v === 'object' ? v.score : v) >= 100)) return true;
     // Check live — rebalance if no todos
     const workoutPct   = (() => { const cbs = document.querySelectorAll('#workoutList input[type="checkbox"]'); return cbs.length ? Math.round([...cbs].filter(c=>c.checked).length/cbs.length*100) : 0; })();
-    const hydrationPct = Math.round((getHydrationCount() / 9) * 100);
+    const hydrationPct = Math.round((getHydrationCount() / getHydrationDropsGoal()) * 100);
     const todoCbs      = document.querySelectorAll('#todoList input[type="checkbox"]');
     const todoPct      = todoCbs.length ? Math.round([...todoCbs].filter(c=>c.checked).length/todoCbs.length*100) : null;
     const score = todoPct === null
@@ -1851,7 +1852,7 @@ function updateStatsScreen() {
 
   const hydCount  = getHydrationCount();
   const hydGoal   = getHydrationGoal();
-  const hydroOz   = Math.round((hydCount / 9) * hydGoal);
+  const hydroOz   = Math.round((hydCount / getHydrationDropsGoal()) * hydGoal);
   const hydroEl   = document.getElementById('statsHydroCount'); if (hydroEl)  animateCountUp(hydroEl, hydroOz);
   const hydroLbl  = document.getElementById('statsHydroLabel'); if (hydroLbl) hydroLbl.textContent = `/ ${hydGoal} oz`;
 
@@ -2029,7 +2030,7 @@ function scheduleNextPhotoReminder() {
 
 const wizardAnswers = {};
 let currentStep = 0;
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 10;
 
 function wizardGoTo(step) {
   const steps = document.querySelectorAll('.wizard-step');
@@ -2055,15 +2056,16 @@ function wizardGoTo(step) {
   const footer = document.getElementById('wizardBtnFooter');
   const cta    = document.getElementById('wizardCTA');
   const CTA_MAP = {
-    0: { label: "Let's Build My Plan", action: 'next', next: 1 },
-    3: { label: 'Continue',            action: 'next', next: 4 },
-    6: { label: 'Next Step',           action: 'next', next: 7 },
-    7: { label: 'Build My Plan →',     action: 'finish'         },
-    9: { label: 'Start Training →',    action: 'done'           },
+    0:  { label: "Let's Build My Plan", action: 'next', next: 1  },
+    1:  { label: 'Next Step',           action: 'next', next: 2  },
+    4:  { label: 'Continue',            action: 'next', next: 5  },
+    7:  { label: 'Next Step',           action: 'next', next: 8  },
+    8:  { label: 'Build My Plan →',     action: 'finish'          },
+    10: { label: 'Start Training →',    action: 'done'            },
   };
   if (footer && cta) {
     const cfg = CTA_MAP[step];
-    footer.classList.toggle('hidden', !cfg || step === 8);
+    footer.classList.toggle('hidden', !cfg || step === 9);
     if (cfg) {
       cta.textContent   = cfg.label;
       cta._wAction      = cfg.action;
@@ -2089,7 +2091,7 @@ function initWizard() {
         // Skip equipment step if gym-only
         if (key === 'location' && val === 'gym') {
           wizardAnswers.equipment = [];
-          wizardGoTo(4);
+          wizardGoTo(5);
         } else {
           wizardGoTo(step + 1);
         }
@@ -2147,8 +2149,11 @@ function initWizard() {
     if (action === 'next') {
       wizardGoTo(cta._wNext);
     } else if (action === 'finish') {
+      // Gather profile answers
+      wizardAnswers.name                  = document.getElementById('inputName')?.value.trim()      || '';
+      wizardAnswers.waterGlasses          = parseInt(document.getElementById('inputWaterGlasses')?.value) || 8;
       // Gather schedule answers
-      wizardAnswers.wakeTime              = document.getElementById('inputWake')?.value             || '05:00';
+      wizardAnswers.wakeTime              = document.getElementById('inputWake')?.value             || '06:00';
       wizardAnswers.workStart             = document.getElementById('inputWorkStart')?.value        || '08:00';
       wizardAnswers.workEnd               = document.getElementById('inputWorkEnd')?.value          || '17:00';
       wizardAnswers.sleepTime             = document.getElementById('inputSleep')?.value            || '22:00';
@@ -2156,7 +2161,10 @@ function initWizard() {
       wizardAnswers.morningObligationTime = document.getElementById('inputMorningTime')?.value      || '07:00';
       wizardAnswers.workoutTime           = document.getElementById('inputWorkoutTime')?.value      || 'early_morning';
       wizardAnswers.workoutStartTime      = document.getElementById('inputWorkoutStartTime')?.value || '05:00';
-      wizardGoTo(8);
+      // Save profile to localStorage immediately
+      if (wizardAnswers.name) localStorage.setItem('user_name', wizardAnswers.name);
+      localStorage.setItem('hydration_drops_goal', wizardAnswers.waterGlasses);
+      wizardGoTo(9);
       runGenerating();
     } else if (action === 'done') {
       closeWizard();
@@ -2211,7 +2219,7 @@ function finalizePlan() {
 
   // Show done screen with preview
   renderPlanPreview(workoutPlan);
-  wizardGoTo(9);
+  wizardGoTo(10);
 }
 
 function renderPlanPreview(plan) {
@@ -2327,36 +2335,35 @@ function renderScheduleEditor(container) {
 
 function renderHydrationEditor(container) {
   const card = makeCard();
-  addSectionLabel(card, 'Hydration Goal');
-
-  const currentSex = localStorage.getItem('hydration_sex') || 'male';
+  addSectionLabel(card, 'Daily Water Goal');
 
   const desc = document.createElement('p');
   desc.className = 'settings-empty';
   desc.style.cssText = 'margin-bottom:var(--s3);line-height:1.5';
-  desc.textContent = 'Set your biological sex to personalize your daily intake target. Log hydration using the 9 drops on the Schedule tab.';
+  desc.textContent = 'Choose how many glasses of water you aim to drink each day. Each glass = 12 oz.';
   card.appendChild(desc);
 
-  const toggleWrap = document.createElement('div');
-  toggleWrap.className = 'sex-toggle';
-  ['male', 'female'].forEach(sex => {
+  const currentDrops = getHydrationDropsGoal();
+  const optionsWrap = document.createElement('div');
+  optionsWrap.className = 'sex-toggle';
+  [6, 8, 10, 12].forEach(glasses => {
     const btn = document.createElement('button');
-    btn.className = 'sex-toggle-btn' + (currentSex === sex ? ' active' : '');
-    btn.textContent = sex === 'male' ? '♂ Male — 125 oz' : '♀ Female — 91 oz';
+    btn.className = 'sex-toggle-btn' + (currentDrops === glasses ? ' active' : '');
+    btn.textContent = `${glasses} glasses · ${glasses * 12} oz`;
     btn.addEventListener('click', () => {
-      localStorage.setItem('hydration_sex', sex);
+      localStorage.setItem('hydration_drops_goal', String(glasses));
       localStorage.removeItem('hydration_count');
       localStorage.removeItem('hydration_count_date');
       loadHydrationDrops();
       updatePerformanceScore();
       renderSettings();
     });
-    toggleWrap.appendChild(btn);
+    optionsWrap.appendChild(btn);
   });
-  card.appendChild(toggleWrap);
+  card.appendChild(optionsWrap);
 
-  const goal    = currentSex === 'female' ? 91 : 125;
-  const perDrop = Math.round(goal / 9);
+  const goal    = getHydrationGoal();
+  const perDrop = getHydrationOzPerDrop();
   const goalNote = document.createElement('p');
   goalNote.className = 'hydration-oz-note';
   goalNote.style.cssText = 'margin-top:var(--s3);text-align:left';
@@ -2375,7 +2382,7 @@ function renderProfileEditor(container) {
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.className = 'workout-name-input';
-  nameInput.value = localStorage.getItem('user_name') || 'Noel';
+  nameInput.value = localStorage.getItem('user_name') || '';
   nameInput.placeholder = 'Your name';
   nameInput.style.cssText = 'margin-bottom:var(--s2)';
   card.appendChild(nameInput);
@@ -2409,7 +2416,7 @@ function renderProfileEditor(container) {
     img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
     previewWrap.appendChild(img);
   } else {
-    const name = localStorage.getItem('user_name') || 'Noel';
+    const name = localStorage.getItem('user_name') || 'W';
     previewWrap.textContent = name.charAt(0).toUpperCase();
   }
   avatarRow.appendChild(previewWrap);
@@ -2454,7 +2461,7 @@ function renderProfileEditor(container) {
     removeBtn.textContent = 'Remove Photo';
     removeBtn.addEventListener('click', () => {
       localStorage.removeItem('avatar_photo');
-      const name = localStorage.getItem('user_name') || 'Noel';
+      const name = localStorage.getItem('user_name') || 'W';
       loadAvatarPhoto(name.charAt(0).toUpperCase());
       renderSettings();
     });
